@@ -96,7 +96,7 @@ const handleMessage = async (req, res) => {
                     const generatedResponseTwo = await generateGPTResponse(vendorTwoChatHistory);
                     vendorOneChatHistory.push({ "role": "assistant", "content": generatedResponseOne });
                     vendorTwoChatHistory.push({ "role": "assistant", "content": generatedResponseTwo });
-                    await sendMessage(phoneNumberId, VENDOR_1, generatedResponseOne);
+                    // await sendMessage(phoneNumberId, VENDOR_1, generatedResponseOne);
                     await sendMessage(phoneNumberId, VENDOR_2, generatedResponseTwo);
                 } else {
                     await sendMessage(phoneNumberId, RESTAURANT_OWNER, "I'm busy talking to your vendors right now. I'll come back to you when I'm done and then we can chat further.");
