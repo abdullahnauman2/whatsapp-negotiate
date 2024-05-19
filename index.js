@@ -102,7 +102,7 @@ const handleMessage = async (req, res) => {
                     await sendMessage(phoneNumberId, RESTAURANT_OWNER, "I'm busy talking to your vendors right now. I'll come back to you when I'm done and then we can chat further.");
                 }
 
-            } else if (senderNum === VENDOR_1) {
+            } if (senderNum === VENDOR_1) {
                 console.log("I got a message from vendor 1")
                 vendorOneChatHistory.push({ "role": "user", "content": msgBody });
                 if (numVendorOneChatRounds == 3) {
@@ -116,7 +116,7 @@ const handleMessage = async (req, res) => {
                     await sendMessage(phoneNumberId, VENDOR_1, generatedResponse);
                     numVendorOneChatRounds++;
                 }
-            } else if (senderNum === VENDOR_2) {
+            } if (senderNum === VENDOR_2) {
                 console.log("I got a message from vendor 2")
                 vendorTwoChatHistory.push({ "role": "user", "content": msgBody });
                 if (numVendorTwoChatRounds == 3) {
