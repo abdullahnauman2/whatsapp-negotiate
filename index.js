@@ -139,7 +139,7 @@ const handleMessage = async (req, res) => {
                 let combinedHistory = [
                     { "role": "assistant", "content": finalPricesVendorOne },
                     { "role": "assistant", "content": finalPricesVendorTwo },
-                    { "role": "system", "content": "Look at the prices offered by the two vendors, in the chat above compare them and give me back a message listing the best prices for each ingredient based on supplier. The first supplier is Sysco the second supplier is US Foods. You are talking to the restaurant owner, so address the owner in this message." }
+                    { "role": "system", "content": "Look at the prices offered by the two vendors, in the chat above compare them and give me back a message listing the best prices for each ingredient based on supplier. The first supplier is Sysco the second supplier is US Foods. You are talking to the restaurant owner, so address the owner in this message. Don't sound like an AI. don't always use correct grammar. this is happening over whatsapp on a mobile phone keyboard. sound like a normal assistant." }
                 ];
                 const generatedResponse = await generateGPTResponse(combinedHistory);
                 await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
