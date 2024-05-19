@@ -134,7 +134,14 @@ const handleMessage = async (req, res) => {
                 }
             }
             if (doneNegotiatingVendorOne && doneNegotiatingVendorTwo) {
-                const generatedResponse = await generateGPTResponse([{"role": "assistant", finalPricesVendorOne}, {"role": "assistant", finalPricesVendorTwo}, {"role": "system", "content": "Look at the prices offered by the two vendors, compare tham and give me back a message listing these ingredients and best prices for the order. You are talking to the restaurant owner, so address the owner in this message."}]);
+                console.log(finalPricesVendorOne);
+                console.log(finalPricesVendorTwo);
+                let combinedHistory = [
+                    { "role": "assistant", finalPricesVendorOne },
+                    { "role": "assistant", finalPricesVendorTwo },
+                    { "role": "system", "content": "Look at the prices offered by the two vendors, compare tham and give me back a message listing these ingredients and best prices for the order. You are talking to the restaurant owner, so address the owner in this message." }
+                ];
+                const generatedResponse = await generateGPTResponse(combinedHistory);
                 await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
             }
             res.sendStatus(200);
