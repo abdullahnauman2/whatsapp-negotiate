@@ -92,15 +92,13 @@ const handleMessage = async (req, res) => {
 
             } else if (senderNum === VENDOR_1) {
                 console.log("I got a message from vendor")
+                vendorOneChatHistory.push({ "role": "user", "content": msgBody });
                 if (numVendorOneChatRounds == 3) {
                     vendorOneChatHistory.push({ "role": "system", "content": "Okay, look at the chat history above and find the best price offered so for the the items. Then give me back a message listing these ingredients and best prices. You are now talking to the restaurant owner, so address the owner in this message." });
                     const generatedResponse = await generateGPTResponse(vendorOneChatHistory);
                     await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
                     doneNegotiating = true;
                 } else {
-                    console.log("pushing vendor message to");
-                    console.log(msgBody);
-                    vendorOneChatHistory.push({ "role": "user", "content": msgBody });
                     const generatedResponse = await generateGPTResponse(vendorOneChatHistory);
                     vendorOneChatHistory.push({ "role": "assistant", "content": generatedResponse });
                     await sendMessage(phoneNumberId, VENDOR_1, generatedResponse);
