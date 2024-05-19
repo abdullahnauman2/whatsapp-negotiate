@@ -150,7 +150,7 @@ const handleMessage = async (req, res) => {
         }
     }
 };
-// hey
+// hey ready to demo
 // Function to generate a response using GPT
 const generateGPTResponse = async (entireChat) => {
     try {
@@ -162,7 +162,7 @@ const generateGPTResponse = async (entireChat) => {
         return completion.choices[0].message.content;
     } catch (error) {
         console.error("Error generating response:", error);
-        return "Sorry, I couldn't generate a response.";
+        return "Sorry, I couldn't generate a response.";    
     }
 };
 
