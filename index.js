@@ -108,7 +108,8 @@ const handleMessage = async (req, res) => {
                 if (numVendorOneChatRounds == 3) {
                     vendorOneChatHistory.push({ "role": "system", "content": "Okay, look at the chat history above and find the best price offered so for the the items. Then give me back a message listing these ingredients and best prices." });
                     const generatedResponse = await generateGPTResponse(vendorOneChatHistory);
-                    await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
+                    finalPricesVendorOne = generateGPTResponse;
+                    // await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
                     doneNegotiatingVendorOne = true;
                 } else {
                     const generatedResponse = await generateGPTResponse(vendorOneChatHistory);
@@ -122,7 +123,8 @@ const handleMessage = async (req, res) => {
                 if (numVendorTwoChatRounds == 3) {
                     vendorTwoChatHistory.push({ "role": "system", "content": "Okay, look at the chat history above and find the best price offered so for the the items. Then give me back a message listing these ingredients and best prices." });
                     const generatedResponse = await generateGPTResponse(vendorTwoChatHistory);
-                    await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
+                    finalPricesVendorTwo = generateGPTResponse;
+                    // await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
                     doneNegotiatingVendorTwo = true;
                 } else {
                     const generatedResponse = await generateGPTResponse(vendorTwoChatHistory);
