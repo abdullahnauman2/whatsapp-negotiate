@@ -28,13 +28,21 @@ const app = express().use(body_parser.json());
 
 let firstMessageToGeorge = true;
 let numVendorOneChatRounds = 0;
-let doneNegotiating = false;
+let numVendorTwoChatRounds = 0;
+let doneNegotiatingVendorOne = false;
+let doneNegotiatingVendorTwo = false;
+let finalPricesVendorOne = "";
+let finalPricesVendorTwo = "";
 
 let ownerChatHistory = [
     { "role": "system", "content": "" },
 ];
 
 let vendorOneChatHistory = [
+    { "role": "system", "content": "You are a master negotiator for a restaurant in San Francisco. You are talking to a vendor. Using the next message as a reference, extract the ingredients you need to negotiate for. Then talk to me, the vendor, ask for the prices of the ingredients. You will attempt to negotiate these prices to find me a good deal. Don't sound like an AI. don't always use correct grammar. this is happening over whatsapp on a mobile phone keyboard. sound like a normal immigrant restaurant owner." },
+];
+
+let vendorTwoChatHistory = [
     { "role": "system", "content": "You are a master negotiator for a restaurant in San Francisco. You are talking to a vendor. Using the next message as a reference, extract the ingredients you need to negotiate for. Then talk to me, the vendor, ask for the prices of the ingredients. You will attempt to negotiate these prices to find me a good deal. Don't sound like an AI. don't always use correct grammar. this is happening over whatsapp on a mobile phone keyboard. sound like a normal immigrant restaurant owner." },
 ];
 
@@ -83,27 +91,49 @@ const handleMessage = async (req, res) => {
                     firstMessageToGeorge = false;
                     await sendMessage(phoneNumberId, RESTAURANT_OWNER, "Okay, got it. I'll go talk to your vendors and create the order for the best prices this week.");
                     vendorOneChatHistory.push({ "role": "system", "content": msgBody });
-                    const generatedResponse = await generateGPTResponse(vendorOneChatHistory);
-                    vendorOneChatHistory.push({ "role": "assistant", "content": generatedResponse });
-                    await sendMessage(phoneNumberId, VENDOR_1, generatedResponse);
+                    vendorTwoChatHistory.push({ "role": "system", "content": msgBody });
+                    const generatedResponseOne = await generateGPTResponse(vendorOneChatHistory);
+                    const generatedResponseTwo = await generateGPTResponse(vendorTwoChatHistory);
+                    vendorOneChatHistory.push({ "role": "assistant", "content": generatedResponseOne });
+                    vendorTwoChatHistory.push({ "role": "assistant", "content": generatedResponseTwo });
+                    await sendMessage(phoneNumberId, VENDOR_1, generatedResponseOne);
+                    await sendMessage(phoneNumberId, VENDOR_2, generatedResponseTwo);
                 } else {
-                    await sendMessage(phoneNumberId, RESTAURANT_OWNER, "I'm busying talking to your vendors right now. I'll come back to you when I'm done and then we can chat further.");
+                    await sendMessage(phoneNumberId, RESTAURANT_OWNER, "I'm busy talking to your vendors right now. I'll come back to you when I'm done and then we can chat further.");
                 }
 
             } else if (senderNum === VENDOR_1) {
-                console.log("I got a message from vendor")
+                console.log("I got a message from vendor 1")
                 vendorOneChatHistory.push({ "role": "user", "content": msgBody });
                 if (numVendorOneChatRounds == 3) {
-                    vendorOneChatHistory.push({ "role": "system", "content": "Okay, look at the chat history above and find the best price offered so for the the items. Then give me back a message listing these ingredients and best prices. You are now talking to the restaurant owner, so address the owner in this message." });
+                    vendorOneChatHistory.push({ "role": "system", "content": "Okay, look at the chat history above and find the best price offered so for the the items. Then give me back a message listing these ingredients and best prices." });
                     const generatedResponse = await generateGPTResponse(vendorOneChatHistory);
                     await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
-                    doneNegotiating = true;
+                    doneNegotiatingVendorOne = true;
                 } else {
                     const generatedResponse = await generateGPTResponse(vendorOneChatHistory);
                     vendorOneChatHistory.push({ "role": "assistant", "content": generatedResponse });
                     await sendMessage(phoneNumberId, VENDOR_1, generatedResponse);
                     numVendorOneChatRounds++;
                 }
+            } else if (senderNum === VENDOR_2) {
+                console.log("I got a message from vendor 2")
+                vendorTwoChatHistory.push({ "role": "user", "content": msgBody });
+                if (numVendorTwoChatRounds == 3) {
+                    vendorTwoChatHistory.push({ "role": "system", "content": "Okay, look at the chat history above and find the best price offered so for the the items. Then give me back a message listing these ingredients and best prices." });
+                    const generatedResponse = await generateGPTResponse(vendorTwoChatHistory);
+                    await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
+                    doneNegotiatingVendorTwo = true;
+                } else {
+                    const generatedResponse = await generateGPTResponse(vendorTwoChatHistory);
+                    vendorTwoChatHistory.push({ "role": "assistant", "content": generatedResponse });
+                    await sendMessage(phoneNumberId, VENDOR_2, generatedResponse);
+                    numVendorTwoChatRounds++;
+                }
+            }
+            if (doneNegotiatingVendorOne && doneNegotiatingVendorTwo) {
+                const generatedResponse = await generateGPTResponse([{"role": "assistant", finalPricesVendorOne}, {"role": "assistant", finalPricesVendorTwo}, {"role": "system", "content": "Look at the prices offered by the two vendors, compare tham and give me back a message listing these ingredients and best prices for the order. You are talking to the restaurant owner, so address the owner in this message."}]);
+                await sendMessage(phoneNumberId, RESTAURANT_OWNER, generatedResponse);
             }
             res.sendStatus(200);
         } else {
