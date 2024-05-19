@@ -12,7 +12,7 @@ const TOKEN = process.env.TOKEN;
 const MY_TOKEN = process.env.MYTOKEN;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const VENDOR_1 = "16315900900";
-const VENDOR_2 = "14159993716";
+const VENDOR_2 = "15713517342";
 const VENDOR_3 = "";
 
 const initOpenAI = () => {
